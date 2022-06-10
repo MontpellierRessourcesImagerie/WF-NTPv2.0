@@ -1,8 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import cPickle
-import tkFileDialog
+#import cPickle
+import pickle as cPickle
+#import tkFileDialog
+from tkinter import filedialog as tkFileDialog
 
 class Video:
     def __init__(self,fname,grey=False):

@@ -1,5 +1,5 @@
 ### Input
-filename = "C:/Users/Mandy/Downloads/JBKirkegaard-multiwormtracker-85a540a2a163/D1_swimming_2016-04-01-122434-0000.avi"
+filename = "/media/baecker/DONNEES/programs/c_elegans_tracking/N2-2_2019-07-29-133409-0000.avi"
 start_frame = 0
 limit_images_to = 10
 fps = 20.0
@@ -8,7 +8,7 @@ darkfield = False
 stop_after_example_output = False
 
 ### Output
-save_as = "C:/Users/Mandy/Downloads/JBKirkegaard-multiwormtracker-85a540a2a163/"
+save_as = "/media/baecker/DONNEES/programs/c_elegans_tracking/out/g"
 output_overlayed_images = 0
 font_size =  8
 fig_size = (20,20)

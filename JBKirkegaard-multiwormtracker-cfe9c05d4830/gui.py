@@ -1,10 +1,11 @@
-import Tkinter as tk
-import ttk
-import tkFileDialog
-import tkMessageBox
-import tkSimpleDialog
+import tkinter as tk
+from tkinter import ttk
+from tkinter import filedialog as tkFileDialog
+from tkinter import messagebox as tkMessageBox
+from tkinter import simpledialog as tkSimpleDialog
 import cv2
-import cv2.cv as cv
+#import cv2.cv as cv
+import cv2 as cv
 import os
 import multiprocessing
 import matplotlib
@@ -269,7 +270,7 @@ class MainApplication(tk.Frame):
         try:
             with open(filename) as f:
                 settings = f.read()
-            exec settings
+            exec(settings)
         except:
             self.log('Not a valid settings.py file')
             return
@@ -1160,16 +1161,16 @@ class AddJob(tk.Toplevel):
             filenames = (filename,)
         try:
             video = cv2.VideoCapture(filename)
-            n_frames = video.get(cv.CV_CAP_PROP_FRAME_COUNT)
+            n_frames = video.get(cv.CAP_PROP_FRAME_COUNT)
         except:
             self.parent.log('Error opening video: '+filename)
             return
         if n_frames < 0.5:
             self.parent.log('Error opening video: '+filename)
             return
-        width = video.get(cv.CV_CAP_PROP_FRAME_WIDTH)
-        height = video.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
-        fps = video.get(cv.CV_CAP_PROP_FPS)
+        width = video.get(cv.CAP_PROP_FRAME_WIDTH)
+        height = video.get(cv.CAP_PROP_FRAME_HEIGHT)
+        fps = video.get(cv.CAP_PROP_FPS)
 
         self.videoname.config(state='normal')
         self.videoname.delete(0, tk.END)
@@ -1215,9 +1216,9 @@ class AddJob(tk.Toplevel):
             end = int(self.use_frame.get())
         except:
             start = 0
-            end = video.get(cv.CV_CAP_PROP_FRAME_COUNT)-1
+            end = video.get(cv.CAP_PROP_FRAME_COUNT)-1
         mid = int((end-start)//2)
-        video.set(cv.CV_CAP_PROP_POS_FRAMES, mid)
+        video.set(cv.CAP_PROP_POS_FRAMES, mid)
         ret, frame = video.read()
 
         plt.figure(figsize=(12, 9.5))

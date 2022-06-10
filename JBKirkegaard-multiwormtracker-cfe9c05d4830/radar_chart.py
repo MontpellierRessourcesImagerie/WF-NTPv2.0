@@ -144,7 +144,7 @@ def read_results(results_files_folder, grep_section=['Full data set','Cut-off da
         fl=[results_files_folder]
     for fil in fl :
         k=fil.split('/')[-1].split('.')[0] # get fname without path or extension
-        if k in data : print "**ERROR** overwriting data for key %s with file %s" % (k,fil)
+        if k in data : print("**ERROR** overwriting data for key %s with file %s" % (k,fil))
         data[k] = read_results_file(fil, grep_section=grep_section)
     return data
 
@@ -169,24 +169,24 @@ def read_results_file(fname, grep_section=['Full data set','Cut-off data','Raw d
             else:
                 for k in grep_section :
                    if key[:len(k)].lower()==k.lower() :
-                       if fk!=False : print "ERROR %s found twice (%s)" % (k,key)
+                       if fk!=False : print ("ERROR %s found twice (%s)" % (k,key))
                        fk=k
                 if fk!=False : read=True
                 else : read=False
             continue
         if read :
             if ':' in line : # reading global data
-                print line
+                print(line)
                 if fk not in data : data[fk]={}
                 k,val=line.split(':')
                 if ',' in val : val=map(float,[v for v in val.split(',') if v.strip()!=''])
                 else : val=float(val)
 
-                if k in data[fk] : print "ERROR overwriting %s in %s" % (k,fk)
+                if k in data[fk] : print("ERROR overwriting %s in %s" % (k,fk))
                 data[fk][k]=val
             else : # we assume this is a spreadsheet like data
                 if csv_dict==None :
-                   print "**ERROR** cannot read data for keyword %s as the csv_dict module was not found. Skipping this section" % (fk)
+                   print("**ERROR** cannot read data for keyword %s as the csv_dict module was not found. Skipping this section" % (fk))
                    read=False
                    continue
                 if ';' in line :
@@ -195,17 +195,17 @@ def read_results_file(fname, grep_section=['Full data set','Cut-off data','Raw d
                    for v in line :
                        try : vals+=[float(v)]
                        except Exception : vals+=[v]
-                   if vals[0] in data[fk] : print "ERROR overwriting %s in %s" % (line[0],fk)
+                   if vals[0] in data[fk] : print("ERROR overwriting %s in %s" % (line[0],fk))
                    data[fk][vals[0]]=vals[1:]
                 else : # read header
-                   if fk in data :  print "ERROR overwriting header and class for section %s" % (fk)
+                   if fk in data :  print("ERROR overwriting header and class for section %s" % (fk))
                    hd=line.split('    ')
                    data[fk]=csv_dict.Data()
                    data[fk].key_column_hd_name =hd[0]
                    data[fk].hd= csv_dict.list_to_dictionary(hd[1:])
 
       except Exception :
-         print "\nException raised for file %s at line %d:\n%s" % (fname,j+1,str(line))
+         print("\nException raised for file %s at line %d:\n%s" % (fname,j+1,str(line)))
          raise
 
     return data
@@ -225,17 +225,21 @@ def get_corners_from_data(data, plot_section='Full data set',  corners=['BPM','A
         for c in corners :
             if c.lower() in kl and kl.replace(c.lower(),'').strip() in ['', 'deviation', 'standard deviation','error','mean','error on mean']: # second part makes condition more stringent so that one can distinguish average speed from speed and similar
                 if 'deviation' in kl :
-                     if debug : print c,'_deviation ->',k
-                     if c in plot_st_deviations : print "ERROR overwriting %s in plot_st_deviations" % (c)
+                     if debug: 
+                         print(c,'_deviation ->',k)
+                     if c in plot_st_deviations : print ("ERROR overwriting %s in plot_st_deviations" % (c))
                      plot_st_deviations[c]=data[plot_section][k]
                 elif 'error' in kl :
-                     if debug : print c,'_error ->',k
-                     if c in plot_errors : print "ERROR overwriting %s in plot_errors" % (c)
+                     if debug:
+                         print (c,'_error ->',k)
+                     if c in plot_errors : print("ERROR overwriting %s in plot_errors" % (c))
                      plot_errors[c]=data[plot_section][k]
-                elif 'mean' in kl :
-                     if debug : print c,'_value ->',k
-                     if c in plot_values : print "ERROR overwriting %s in plot_values" % (c)
-                     plot_values[c]=data[plot_section][k]
+                elif 'mean' in kl:
+                         if debug: 
+                             print(c,'_value ->',k)
+                         if c in plot_values: 
+                             print("ERROR overwriting %s in plot_values" % (c))
+                         plot_values[c]=data[plot_section][k]
     for c in corners :
         if c not in plot_values and  c not in plot_st_deviations and  c not in plot_errors : # maybe this variable does not have mean etc but it is present alone
           tmp=None
@@ -244,20 +248,21 @@ def get_corners_from_data(data, plot_section='Full data set',  corners=['BPM','A
              kl.replace('averaged speed','average speed') # fix possible bug in script that prints results, sometimes it is printed as averageD and sometimes as average
              if c.lower() in kl : # look for keywords without mean/error/stdev such as the dead ratio
                 if tmp==None : tmp=k
-                else : print "ERROR %s not found in any with standard criteria, now found twice in %s and %s" % (c,tmp,k)
+                else: 
+                    print("ERROR %s not found in any with standard criteria, now found twice in %s and %s" % (c,tmp,k))
           if tmp!=None :
               plot_values[c]=data[plot_section][tmp]
               plot_st_deviations[c]=0.
               plot_errors[c]=0. # assign zero
-        if c not in plot_values : print "WARNING %s not found for plot_values" % (c)
-        if c not in plot_st_deviations : print "WARNING %s not found for plot_st_deviations" %(c)
+        if c not in plot_values : print("WARNING %s not found for plot_values" % (c))
+        if c not in plot_st_deviations : print("WARNING %s not found for plot_st_deviations" %(c))
         if c not in plot_errors :
              if c in plot_st_deviations :
                 plot_errors[c]=plot_st_deviations[c]
-                print "WARNING %s not found for plot_errors - assinging stdev=%lf" %(c,plot_st_deviations[c])
+                print("WARNING %s not found for plot_errors - assinging stdev=%lf" %(c,plot_st_deviations[c]))
              else :
                 plot_errors[c]=0
-                print "WARNING %s not found for plot_errors - assinging 0" %(c)
+                print("WARNING %s not found for plot_errors - assinging 0" %(c))
     return plot_values,plot_errors,plot_st_deviations
 
 
@@ -269,7 +274,7 @@ def plot_results( results_files_folder, reference_values, plot_section='Full dat
       or a file in the results.txt format from where this values are read. This can be for instance the results for the WT worm
       if None is given then the normalization is done with the maximum values read from the result file(s).
     '''
-    print "Going to plot: ",corners
+    print("Going to plot: ",corners)
     if reference_values==None : plot_reference_values=False # rest fixed afterwards
     elif type(reference_values) is str : # read file
         reference_data= read_results(reference_values)
@@ -290,7 +295,7 @@ def plot_results( results_files_folder, reference_values, plot_section='Full dat
     errors=[]
     for fk in data : # double for loop necessary if reference_values is None
         if fk==ref_label :
-            print "WARN %s is ref_label excluding from plotting data.." % (fk)
+            print ("WARN %s is ref_label excluding from plotting data.." % (fk))
             continue
         labels+=[fk]
         plot_values,plot_errors,plot_st_deviations = get_corners_from_data(data[fk], plot_section=plot_section,corners=corners)
@@ -355,7 +360,8 @@ class Radar(object):
         self.axes = [fig.add_axes(rect, projection="polar", label="axes%d" % i)
                          for i in range(self.n)]
 
-	if debug : print self.n,len(self.axes),len(self.angles),len(labels),len(titles),titles,self.angles
+        if debug: 
+            print (self.n,len(self.axes),len(self.angles),len(labels),len(titles),titles,self.angles)
         self.ax = self.axes[0]
         self.ax.set_thetagrids(self.angles, labels=titles, fontsize=text_sizes['title'],frac=1.15)
         #*frac* is the fraction of the polar axes radius at which to place the label (1 is the edge). e.g., 1.05 is outside the axes and 0.95 is inside the axes. 1.15 is 15% out
