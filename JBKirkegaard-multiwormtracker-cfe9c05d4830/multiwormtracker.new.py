@@ -139,8 +139,8 @@ else:
 
 def savitzky_golay(y, window_size, order, deriv=0, rate=1):
     try:
-        window_size = np.abs(np.int(window_size))
-        order = np.abs(np.int(order))
+        window_size = np.abs(int(window_size))
+        order = np.abs(int(order))
     except ValueError:
         raise ValueError("window_size and order have to be of type int")
     if window_size % 2 != 1 or window_size < 1:
@@ -297,12 +297,12 @@ def apply_Z(i0,i1,Z,mean_brightness):
         thresholded = frame >(threshold/255.)
 
         if opening>0:
-            frame_after_open = ndimage.binary_opening(thresholded, structure=np.ones((opening, opening))).astype(np.int)
+            frame_after_open = ndimage.binary_opening(thresholded, structure=np.ones((opening, opening))).astype(int)
         else:
             frame_after_open = thresholded
 
         if closing>0:
-            frame_after_close = ndimage.binary_closing(frame_after_open, structure=np.ones((closing, closing))).astype(np.int)
+            frame_after_close = ndimage.binary_closing(frame_after_open, structure=np.ones((closing, closing))).astype(int)
         else:
             frame_after_close = frame_after_open
 
@@ -369,10 +369,17 @@ def locate(args):
 
 def track_all_locations():
     apply_indeces = map(int,list(np.linspace(0,len(video),len(video)//use_images+2)))
-    apply_indeces = zip(list(apply_indeces)[:-1],list(apply_indeces)[1:])
+    apply_indeces = list(apply_indeces)
+    apply_indeces = zip(apply_indeces[:-1], list(apply_indeces)[1:])
+    apply_indeces = list(apply_indeces)
     Z_indeces = [(max([0,i-use_around]),min(j+use_around,len(video))) for i,j in apply_indeces]
     t0 =  time.time()
-    args = zip(apply_indeces,Z_indeces)
+    print("apply_indeces")
+    print(apply_indeces)
+    print("Z_indeces")
+    print(Z_indeces)
+    
+    args = list(zip(apply_indeces,Z_indeces))
     if parallel and not stop_after_example_output:
         p = Pool(cpu_count())
         split_results = p.map(locate,args,chunksize=1)
@@ -412,6 +419,8 @@ def form_trajectories(loc):
         exit()
     track = tp.filter_stubs(track, min([min_track_length,len(loc)]))
     try:
+        print("len(track)")
+        print(len(track))
         trackfile = open('%strack.p'%save_as,'w')
         cPickle.dump(track, trackfile)
         trackfile.close()

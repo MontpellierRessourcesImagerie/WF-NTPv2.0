@@ -267,66 +267,34 @@ class MainApplication(tk.Frame):
 
     def load_job(self):
         filename = tkFileDialog.askopenfilename(title='Locate a settings.py file',filetypes=[("Settings file","*.py")])
+        job = {}
         try:
             with open(filename) as f:
                 settings = f.read()
-            exec(settings)
+            exec(settings, locals(), job)
         except:
             self.log('Not a valid settings.py file')
             return
-        try:
-            job = {}
-            job['video'] = filename
-            job['startframe'] = start_frame
-            job['useframes'] = limit_images_to
-            job['fps'] = fps
-            job['px_to_mm'] = px_to_mm
-            job['darkfield'] = darkfield
-            job['method'] = 'Keep Dead' if keep_dead_method else 'Z-Filtering'
-            job['z_use'] = use_images
-            job['z_padding'] = use_around
-            job['std_px'] = std_px
-            job['threshold'] = threshold
-            job['opening'] = opening
-            job['closing'] = closing
-            job['minsize'] = min_size
-            job['maxsize'] = max_size
-            job['maxdist'] = max_dist_move
-            job['minlength'] = min_track_length
-            job['memory'] = memory
-            job['bendthres'] = bend_threshold
-            job['minbends'] = minimum_bends
-            job['velframes'] = frames_to_estimate_velocity
-            job['maxbpm'] = maximum_bpm
-            job['maxvel'] = maximum_velocity
-            job['outputname'] = save_as
-            job['outputframes'] = output_overlayed_images
-            job['font_size'] = font_size
-            job['extra_filter'] = extra_filter # added new
-            job['cutoff_filter'] = cutoff_filter #new
-            job['lower'] = lower # added new
-            job['upper'] = upper # added new
-            job['use_average'] = 'Average' if use_average else 'Maximum' # added new
-            job['Bends_max'] = Bends_max # added new
-            job['Speed_max'] = Speed_max # added new
-            try: # Backwards compability
-                job['minimum_ecc'] = minimum_ecc
-            except NameError:
-                job['minimum_ecc'] = 0.0
-            try: # Backwards compability
-                job['skeletonize'] = skeletonize
-                job['prune_size'] = prune_size
-            except NameError:
-                job['skeletonize'] = False
-                job['prune_size'] = 0
-            try: # Backwards compability
-                job['do_full_prune'] = do_full_prune
-            except NameError:
-                job['do_full_prune'] = False
-            job['regions'] = regions
-        except:
-            self.log('Not a valid settings.py file')
-            return
+        job['video'] = job['filename']
+        job['outputname'] = job['save_as']
+        job['startframe'] = job["start_frame"]
+        job['useframes'] = job['limit_images_to']
+        job['z_use'] = job['use_images']
+        job['z_padding'] = job['use_around']
+        job['minsize'] = job['min_size']
+        job['maxsize'] = job['max_size']
+        job['maxdist'] = job['max_dist_move']
+        job['minlength'] = job['min_track_length']
+        job['bendthres'] = job['bend_threshold']
+        job['minbends'] = job['minimum_bends']
+        job['velframes'] = job['frames_to_estimate_velocity']
+        job['maxbpm'] = job['maximum_bpm']
+        job['maxvel'] = job['maximum_velocity']
+        job['outputname'] = job['save_as']
+        job['outputframes'] = job['output_overlayed_images']
+        job['method'] = 'Keep Dead' if job['keep_dead_method'] else 'Z-Filtering'
+        job['use_average'] = 'Average' if job['use_average'] else 'Maximum' 
+        print(job)
         self.add_job(job)
 
     def example_output(self, index):
