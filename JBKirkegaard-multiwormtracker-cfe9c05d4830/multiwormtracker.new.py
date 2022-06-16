@@ -419,9 +419,7 @@ def form_trajectories(loc):
         exit()
     track = tp.filter_stubs(track, min([min_track_length,len(loc)]))
     try:
-        print("len(track)")
-        print(len(track))
-        trackfile = open('%strack.p'%save_as,'w')
+        trackfile = open('%strack.p'%save_as,'wb')
         cPickle.dump(track, trackfile)
         trackfile.close()
     except:
@@ -500,10 +498,34 @@ def extract_velocity(tt, xx, yy):
     return velocity
 
 def extract_max_speed(tt, xx, yy):
+    print("type xx: " + str(type(xx)))
+    print(xx.size)
+    print(xx.shape)
+    print("yy: " + str(yy))
+    print(yy.size)
+    print(yy.shape)
+    print("tt: " + str(tt))    
+    print(tt.size)
+    print(tt.shape)
     ftev = frames_to_estimate_velocity
+    print("ftev: " + str(ftev)) 
     dtt = -(np.roll(tt,ftev)-tt)[ftev:]
     dxx = (np.roll(xx,ftev)-xx)[ftev:]
     dyy = (np.roll(yy,ftev)-yy)[ftev:]
+    print("extract max speed")
+    print("type dxx: " + str(type(dxx)))
+    print(dxx.size)
+    print(dxx.shape)
+    print("dyy: " + str(dyy))
+    print(dyy.size)
+    print(dyy.shape)
+    print("dtt: " + str(dtt))    
+    print(dtt.size)
+    print(dtt.shape)
+    print("px_to_mm: " + str(px_to_mm))
+    r = np.sqrt(dxx**2+dyy**2)/dtt
+    print(r.size)
+    print(r.shape)
     percentile = px_to_mm * np.percentile((np.sqrt(dxx**2+dyy**2)/dtt), 90)*fps
     return percentile
 
@@ -639,10 +661,10 @@ def extract_data(track):
     bendsinmovie = []
     appears_in = []
     for i,p in enumerate(particles):
-        bpm.append(bends[i][-1]/np.ptp(T[P==p])*60*fps)
+        np.append(bpm, bends[i][-1]/np.ptp(T[P==p])*60*fps)
         x = (limit_images_to/fps)
-        bendsinmovie.append(bends[i][-1]/np.ptp(T[P==p])*x*fps)#CHANGE
-        appears_in.append(len(bends[i]))
+        np.append(bendsinmovie, bends[i][-1]/np.ptp(T[P==p])*x*fps)#CHANGE
+        np.append(appears_in, (len(bends[i])))
 
         # Cut off-tool for skewed statistics
         if cutoff_filter == True:
@@ -708,7 +730,7 @@ def extract_data(track):
                     continue
             else:
                 this_reg = 'all'
-            region.append(this_reg)
+            np.append(region, this_reg)
             region_particles[this_reg].append(p)
 
         region, bends, bpm, bendsinmovie, appears_in, particles, velocites, areas, \
