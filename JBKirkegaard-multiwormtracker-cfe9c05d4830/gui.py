@@ -297,7 +297,6 @@ class MainApplication(tk.Frame):
             job['use_average'] = 'Average' if job['use_average'] else 'Maximum' 
         except KeyError:
             job['use_average']  = 'Maximum' 
-        print(job)
         self.add_job(job)
 
     def example_output(self, index):

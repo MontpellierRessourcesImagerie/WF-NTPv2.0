@@ -53,3 +53,13 @@ maximum_velocity = 0.1
 
 ### Regions
 regions = {}
+
+### Optimisation tools
+lower = 0
+upper = 100
+use_average = True
+cutoff_filter = False
+extra_filter = False
+Bends_max = 20.0
+Speed_max = 0.035
+

@@ -412,13 +412,7 @@ def form_trajectories(loc):
         exit()
     track = tp.filter_stubs(track, min([min_track_length,len(loc)]))
     try:
-        #trackfile = open('%strack.p'%save_as,'wb')
-        print("track")
-        print(type(track))
-        print(track)
         track.to_pickle('%strack.p'%save_as)
-        #cPickle.dump(track, trackfile)
-        #trackfile.close()
     except:
         print ('Warning: no track file saved. Track too long.')
         print ('         plot_path.py will not work on this file.')
@@ -843,16 +837,6 @@ def statistics(bends, particles, velocites,    areas,
     else:
                 max_number_worms_present = max([len([1 for p in set(P[T==t]) if p in particles]) for t in set(T)])
     count = len(particles)
-
-    print("bpm")
-    print(len(bpm))
-    print(maximum_bpm)
-    print(len(bpm<=maximum_bpm))
-    
-    print("velocities")
-    print(len(velocites))
-    print(maximum_velocity)
-    print(len(velocites<=maximum_velocity))
     
     n_dead = np.sum(np.logical_and(bpm<=maximum_bpm,
                 velocites<=maximum_velocity))
