@@ -342,9 +342,6 @@ def apply_Z(i0,i1,Z,mean_brightness):
         results.append(prop_list)
 
         if i==0:
-            print('Sizes:')
-            print(sizes)
-
             output_processing_frames(frameorig, Z, frame, thresholded,
                 frame_after_open, frame_after_close, labeled, labeled_removed,
                 (skel_labeled if skeletonize else None))
@@ -374,10 +371,6 @@ def track_all_locations():
     apply_indeces = list(apply_indeces)
     Z_indeces = [(max([0,i-use_around]),min(j+use_around,len(video))) for i,j in apply_indeces]
     t0 =  time.time()
-    print("apply_indeces")
-    print(apply_indeces)
-    print("Z_indeces")
-    print(Z_indeces)
     
     args = list(zip(apply_indeces,Z_indeces))
     if parallel and not stop_after_example_output:
@@ -419,9 +412,13 @@ def form_trajectories(loc):
         exit()
     track = tp.filter_stubs(track, min([min_track_length,len(loc)]))
     try:
-        trackfile = open('%strack.p'%save_as,'wb')
-        cPickle.dump(track, trackfile)
-        trackfile.close()
+        #trackfile = open('%strack.p'%save_as,'wb')
+        print("track")
+        print(type(track))
+        print(track)
+        track.to_pickle('%strack.p'%save_as)
+        #cPickle.dump(track, trackfile)
+        #trackfile.close()
     except:
         print ('Warning: no track file saved. Track too long.')
         print ('         plot_path.py will not work on this file.')
@@ -498,34 +495,11 @@ def extract_velocity(tt, xx, yy):
     return velocity
 
 def extract_max_speed(tt, xx, yy):
-    print("type xx: " + str(type(xx)))
-    print(xx.size)
-    print(xx.shape)
-    print("yy: " + str(yy))
-    print(yy.size)
-    print(yy.shape)
-    print("tt: " + str(tt))    
-    print(tt.size)
-    print(tt.shape)
     ftev = frames_to_estimate_velocity
-    print("ftev: " + str(ftev)) 
     dtt = -(np.roll(tt,ftev)-tt)[ftev:]
     dxx = (np.roll(xx,ftev)-xx)[ftev:]
     dyy = (np.roll(yy,ftev)-yy)[ftev:]
-    print("extract max speed")
-    print("type dxx: " + str(type(dxx)))
-    print(dxx.size)
-    print(dxx.shape)
-    print("dyy: " + str(dyy))
-    print(dyy.size)
-    print(dyy.shape)
-    print("dtt: " + str(dtt))    
-    print(dtt.size)
-    print(dtt.shape)
-    print("px_to_mm: " + str(px_to_mm))
     r = np.sqrt(dxx**2+dyy**2)/dtt
-    print(r.size)
-    print(r.shape)
     percentile = px_to_mm * np.percentile((np.sqrt(dxx**2+dyy**2)/dtt), 90)*fps
     return percentile
 
@@ -661,10 +635,10 @@ def extract_data(track):
     bendsinmovie = []
     appears_in = []
     for i,p in enumerate(particles):
-        np.append(bpm, bends[i][-1]/np.ptp(T[P==p])*60*fps)
+        bpm = np.append(bpm, bends[i][-1]/np.ptp(T[P==p])*60*fps)
         x = (limit_images_to/fps)
-        np.append(bendsinmovie, bends[i][-1]/np.ptp(T[P==p])*x*fps)#CHANGE
-        np.append(appears_in, (len(bends[i])))
+        bendsinmovie = np.append(bendsinmovie, bends[i][-1]/np.ptp(T[P==p])*x*fps)#CHANGE
+        appears_in = np.append(appears_in, (len(bends[i])))
 
         # Cut off-tool for skewed statistics
         if cutoff_filter == True:
@@ -730,7 +704,7 @@ def extract_data(track):
                     continue
             else:
                 this_reg = 'all'
-            np.append(region, this_reg)
+            region = np.append(region, this_reg)
             region_particles[this_reg].append(p)
 
         region, bends, bpm, bendsinmovie, appears_in, particles, velocites, areas, \
@@ -870,6 +844,16 @@ def statistics(bends, particles, velocites,    areas,
                 max_number_worms_present = max([len([1 for p in set(P[T==t]) if p in particles]) for t in set(T)])
     count = len(particles)
 
+    print("bpm")
+    print(len(bpm))
+    print(maximum_bpm)
+    print(len(bpm<=maximum_bpm))
+    
+    print("velocities")
+    print(len(velocites))
+    print(maximum_velocity)
+    print(len(velocites<=maximum_velocity))
+    
     n_dead = np.sum(np.logical_and(bpm<=maximum_bpm,
                 velocites<=maximum_velocity))
     n_live = len(particles) - n_dead

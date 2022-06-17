@@ -293,7 +293,10 @@ class MainApplication(tk.Frame):
         job['outputname'] = job['save_as']
         job['outputframes'] = job['output_overlayed_images']
         job['method'] = 'Keep Dead' if job['keep_dead_method'] else 'Z-Filtering'
-        job['use_average'] = 'Average' if job['use_average'] else 'Maximum' 
+        try:
+            job['use_average'] = 'Average' if job['use_average'] else 'Maximum' 
+        except KeyError:
+            job['use_average']  = 'Maximum' 
         print(job)
         self.add_job(job)
 
@@ -490,7 +493,7 @@ class ToTsv(tk.Toplevel):
             out = ''
             for i in range(len(legends)):
                 out += legends[i]
-                for j in xrange(len(output)):
+                for j in range(len(output)):
                     if len(output[j])>i:
                         out += '\t' + output[j][i]
                     elif len(output[j])==i:

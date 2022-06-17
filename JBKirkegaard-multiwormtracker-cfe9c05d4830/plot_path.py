@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 #import cPickle
 import pickle as cPickle
+import pandas as pd
 #import tkFileDialog
 from tkinter import filedialog as tkFileDialog
 
@@ -16,7 +17,7 @@ class Video:
             self.len = limit_images_to
         self.grey = grey
         if grey:
-            for _ in xrange(100):
+            for _ in range(100):
                 ret, frame = self.cap.read()
                 if ret:
                     break
@@ -25,7 +26,7 @@ class Video:
             self.cap.set(cv.CV_CAP_PROP_POS_FRAMES,0)
     def next(self):
         ret = False
-        for _ in xrange(100):
+        for _ in range(100):
             ret, frame = self.cap.read()
             if ret:
                 break
@@ -59,12 +60,14 @@ def plot_path(filename):
     plt.figure(figsize=(10,8))
     colormap = cm.Set2
 
-    with open(filename) as f:
-        track = cPickle.load(f)
+    track = pd.read_pickle(filename)
+    
+#    with open(filename, 'rb') as f:
+#        track = cPickle.load(f)
 
     particles = set(track['particle'])
     colours = [colormap(i/float(len(particles)))
-                    for i in xrange(len(particles))]
+                    for i in range(len(particles))]
     rand = np.random.permutation(len(particles))
     for i, p in enumerate(particles):
         idx = track['particle'] == p
